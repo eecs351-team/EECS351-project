@@ -1,0 +1,74 @@
+{
+  "dataset": "CIFAKE",
+  "seed": 42,
+  "labels": {
+    "REAL": 0,
+    "FAKE": 1
+  },
+  "counts": {
+    "train": {
+      "REAL": {
+        "available": 50000,
+        "requested": 1000,
+        "processed": 1000,
+        "skipped": []
+      },
+      "FAKE": {
+        "available": 50000,
+        "requested": 1000,
+        "processed": 1000,
+        "skipped": []
+      }
+    },
+    "test": {
+      "REAL": {
+        "available": 10000,
+        "requested": 200,
+        "processed": 200,
+        "skipped": []
+      },
+      "FAKE": {
+        "available": 10000,
+        "requested": 200,
+        "processed": 200,
+        "skipped": []
+      }
+    }
+  },
+  "preprocessing": "RGB -> Pillow L (ITU-R 601, 8-bit) -> float64 / 255; native 32x32",
+  "fft": "squared magnitude; no DC; radial bands [0,.15), [.15,.35), [.35,inf) cycles/pixel",
+  "dct": "orthonormal type II; AC radius k/(2N); low <.15, high >=.15; concentration sum(p_AC**2)",
+  "dwt": {
+    "wavelet": "db4",
+    "level": 2,
+    "mode": "symmetric",
+    "normalization": "sum of all squared detail coefficients; approximation excluded",
+    "orientations": "PyWavelets cH, cV, cD; level1=fine, level2=coarse"
+  },
+  "zero_energy": "total <= 1e-24: all corresponding ratios/concentration are zero",
+  "feature_columns": [
+    "fft_low_energy_ratio",
+    "fft_mid_energy_ratio",
+    "fft_high_energy_ratio",
+    "dct_low_energy_ratio",
+    "dct_high_energy_ratio",
+    "dct_ac_concentration",
+    "dwt_horizontal_energy_ratio",
+    "dwt_vertical_energy_ratio",
+    "dwt_diagonal_energy_ratio",
+    "dwt_level1_energy_ratio",
+    "dwt_level2_energy_ratio"
+  ],
+  "summary": "training only; sample std (ddof=1); singleton std=0",
+  "representatives": {
+    "0": "train/REAL/4690 (2).jpg",
+    "1": "train/FAKE/5647 (4).jpg"
+  },
+  "versions": {
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "PyWavelets": "1.10.0",
+    "matplotlib": "3.11.2",
+    "Pillow": "12.3.0"
+  }
+}
