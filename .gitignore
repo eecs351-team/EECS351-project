@@ -1,1 +1,11 @@
 /datasets/
+/data/
+/.venv/
+/.python/
+/.cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+/outputs/
+/tmp/
+# Keep selected report figures explicitly, e.g. docs/figures/*.png.
