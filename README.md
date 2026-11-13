@@ -10,4 +10,7 @@ comprised of 32x32 images, both real and ai-generated.
 
 ## Methods
 At the moment, we have just computed the FFT, DWT, and DCT of real and generated images. 
-insert plots here
+![an image FFT side-by-side with an image of a truck](finalization-task-1.png)
+![An image of the DWT detail coefficients with a progressively scaled down image of a truck](0000-10-real-dwt.png)
+![An image of the DWT detail coefficients with a progressively scaled down image of an ai-generated image of a truck](1000-10-fake-dwt.png)
+![An image of the DCT of the real truck](0000-10-real-dct.png)
