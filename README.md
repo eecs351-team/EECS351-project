@@ -1,145 +1,280 @@
-# EECS 351 Project: AI-Generated Image Detection
+# AI-Generated Image Detection Using DSP and Machine Learning
+
+**University of Michigan | EECS 351 | Fall 2026**
+
 Ethan Kocheril, Jiayuan Zhu, Zhirui Wang, Ziyi Xie
-## Overview
-As the development of large language models continues to progress, the danger of generated images being
-used for fraud, impersonation and other malicious ends will become more present.
-Our project focuses on implementing ways to discover generated images through a combination of traditional
-DSP techniques like the Discrete Cosine Transform and machine-learning models like the support vector machine
-and logistic regression classifier. We are currently using images from the [CIFAKE dataset](https://www.kaggle.com/datasets/birdy654/cifake-real-and-ai-generated-synthetic-images), which is a dataset
-comprised of 32x32 images, both real and ai-generated.
 
-## Methods
-At the moment, we have just computed the FFT, DWT, and DCT of real and generated images.
-We applied code from opencv, pywavelets, and scipy to get the FFT, DWT, and DCT, respectively.
-![an image FFT side-by-side with an image of a truck](finalization-task-1.png)
-![An image of the DWT detail coefficients with a progressively scaled down image of a truck](0000-10-real-dwt.png)
-![An image of the DWT detail coefficients with a progressively scaled down image of an ai-generated image of a truck](1000-10-fake-dwt.png)
-![An image of the DCT of the real truck](0000-10-real-dct.png)
+[Project website](https://eecs351-team.github.io/EECS351-project/) |
+[Team repository](https://github.com/eecs351-team/EECS351-project)
 
-## Progress So Far
-So far, we have come to a decision regarding the machine learning technologies that we'd like to begin using, specifically the support vector machine and logistic regression classifier. We have also begin to compute the DCT, DWT and FFTs of the images in the CIFAKE dataset. A big challenge that we have run into is finding a good dataset. We were initially going to use the GenImage dataset, but we struggle to extract any images from the multi-part zip archive. In its place, we have decided to use CIFAKE for the time being. We would like to consult the course staff regarding the suitability of this dataset for our project. At the moment, the differences between the generated and real images are unclear. We would like to spend more time researching traditional DSP techniques for identifying generated images for inspiration on how to better apply the FFT, DWT, and DCT.
+[Overview](#project-overview) | [Datasets](#datasets) | [Methods](#methodology) |
+[Results](#results-and-discussion) | [Usage](#usage) | [Limitations](#limitations-and-future-work) |
+[Team](#team-contributions) | [Publishing](#github-pages-and-documentation)
 
-## Plan for the future
-- Consult with course staff about the suitability of CIFAKE for our project's purpose.
-- Look into how to better apply the FFT, DWT, and DCT
-- Apply the above transforms to the CIFAKE dataset and record observations so that we may better understand any patterns that might emerge and how they can be used to classify images.
-## New tools
-DCT
+## Project Overview
 
-## Task 1 Experiment: DSP Feature Extraction
+Real photographs and generated images may look convincing while differing in
+frequency and scale statistics. Our research question is: **can compact,
+interpretable DSP features help distinguish real and AI-generated images across
+datasets and generators?** We examine Fourier, cosine, and wavelet representations
+before testing their usefulness with machine learning.
 
-The sections above describe our initial prototype and plans. We have now extended
-that work into a reproducible batch experiment using CIFAKE's original train/test
-partitions. This update covers DSP analysis and feature export; classifiers remain
-future work.
+**Completed:** reproducible DSP extraction, balanced sampling, CSV exports, and
+REAL/FAKE comparisons on CIFAKE and RajuFace. **Planned:** Logistic Regression,
+possible SVM comparison, and classifier generalization tests. No trained model or
+classification performance is available yet.
 
-### Experiment setup
+## Datasets
 
-With random seed **42**, we processed **1,000 REAL + 1,000 FAKE training images**
-and **200 REAL + 200 FAKE test images**, with no skipped images. Each image kept
-its native **32x32** resolution and was converted to grayscale in `[0, 1]`.
-Labels are explicitly **REAL = 0** and **FAKE = 1**.
-
-For each image, we extracted 11 numerical features:
-
-- **FFT:** low-, mid-, and high-frequency energy ratios, excluding DC. Radial
-  boundaries are 0.15 and 0.35 cycles/pixel.
-- **DCT:** low/high AC energy ratios (boundary 0.15 cycles/pixel) and AC energy
-  concentration, using the orthonormal type-II DCT.
-- **DWT:** horizontal, vertical, and diagonal detail-energy ratios, plus two
-  scale-specific ratios, using a true 2D `db4` decomposition at level 2 with
-  symmetric boundary extension.
-
-Feature definitions and implementation details are in the
-[Task 1 technical guide](docs/task1.md#features).
-
-### Transform comparison
-
-The figure below shows one selected training image from each class and its FFT,
-DCT, and DWT representations. Color limits are shared between REAL and FAKE within
-each transform column. `log(1 + |coefficient|)` compresses the display range so
-weaker coefficients remain visible; energy features use squared original
-coefficients, not the logarithmic display values.
-
-![REAL and FAKE training examples with FFT, DCT, and DWT visualizations](docs/figures/transforms.png)
-
-### Training-set results
-
-We compared feature distributions using only the training subset. The table shows
-**mean +/- sample standard deviation**, with 1,000 images per class. Energy ratios
-are fractions from 0 to 1.
-
-| Feature | REAL | FAKE |
+| Property | CIFAKE | RajuFace / 140k Real and Fake Faces |
 | --- | --- | --- |
-| FFT high-frequency energy ratio | 0.0306 +/- 0.0209 | 0.0444 +/- 0.0246 |
-| DCT high-frequency energy ratio | 0.1617 +/- 0.0876 | 0.2136 +/- 0.1061 |
-| DWT fine-scale (level 1) detail-energy ratio | 0.1845 +/- 0.0610 | 0.2500 +/- 0.0808 |
+| Source | [Kaggle dataset](https://www.kaggle.com/datasets/birdy654/cifake-real-and-ai-generated-synthetic-images) | [Hugging Face dataset](https://huggingface.co/datasets/RajuFace/140k-Real-and-Fake-Faces) |
+| Images | 120,000: 60,000 REAL + 60,000 FAKE | 140,000: 70,000 REAL + 70,000 FAKE |
+| Native resolution | 32x32 | 256x256 |
+| REAL source | CIFAR-10 photographs; diverse object categories | FFHQ face photographs |
+| FAKE source | Stable Diffusion 1.4 (diffusion) | StyleGAN (GAN) |
+| Original splits | Train 100,000; test 20,000 | Train 100,000; validation 20,000; test 20,000 |
+| Split proportions | Train/test = 5:1 | Train/validation/test = 5:1:1 (71.43% / 14.29% / 14.29%) |
 
-![Training-only distributions of FFT high-frequency, DCT high-frequency, and DWT fine-scale energy ratios](docs/figures/train_distributions.png)
+Both pipelines use **REAL = 0, FAKE = 1** and preserve original partitions.
+CIFAKE established the small-image baseline; RajuFace checks the same features on
+higher-resolution faces and a different generator family. Differences in content,
+resolution, sources, and generation methods prevent a controlled comparison of
+diffusion and GAN artifacts.
 
-In this subset, FAKE images have higher average high-frequency and fine-scale
-energy ratios. The distributions overlap substantially, so these observations do
-not establish a reliable decision threshold or classification accuracy. The
-[complete training summary](docs/results/train_summary.csv) contains all 11
-features; the [experiment metadata](docs/results/metadata.json) records sample
-counts, feature settings, seed, and library versions. Test features were exported
-for future evaluation and were not used for these comparisons.
+## Methodology
 
-### Filtering and sampling experiment
+```text
+Images -> Grayscale [0,1] -> FFT / DCT / DWT -> 11 numerical features
+                                               v
+                                  Class statistics and figures
+                                               v
+                              Classifier and evaluation (planned)
+```
 
-We also used a **synthetic** image containing gratings at 0.08 and 0.40
-cycles/pixel to demonstrate low-pass filtering, the high-pass residual, and
-2x downsampling. A separable 25-tap FIR low-pass with cutoff 0.20 cycles/pixel
-attenuates frequencies above the new Nyquist limit of 0.25 cycles/original pixel.
-Downsampling without prefiltering produces visible aliasing; prefiltering reduces
-it. This illustrates convolution, filter frequency response, and sampling, and
-is separate from the CIFAKE feature pipeline.
+Pillow converts RGB to 8-bit `L` grayscale, followed by float64 conversion and
+division by 255. Images retain their native dimensions, with identical preprocessing
+for REAL and FAKE. There is no resizing, sharpening, or denoising.
 
-![Synthetic demonstration of low-pass filtering, high-pass residual, and downsampling with and without prefiltering](docs/figures/filtering_sampling.png)
+| Transform | Purpose and features |
+| --- | --- |
+| **2D FFT** | Express spatial variation as complex sinusoids. Extract low/mid/high radial energy shares, excluding DC, at boundaries 0.15 and 0.35 cycles/pixel. |
+| **2D DCT** | Express the image in an orthonormal type-II cosine basis. Extract low/high AC energy shares at 0.15 cycles/pixel and AC energy concentration. |
+| **2D DWT** | Separate detail by orientation and scale. Use `db4`, level 2, symmetric extension; extract horizontal/vertical/diagonal shares and two scale shares of total detail energy. |
 
-### Reproduce the experiment
+The shared extractor returns the same 11 finite, label-independent feature columns
+for both datasets. RajuFace's `generator` field is metadata only. Energy features
+use squared coefficients; `log(1 + |coefficient|)` is for visualization only.
+See the [feature definitions](docs/task1.md#features) and
+[RajuFace technical guide](docs/rajuface.md) for normalization and sampling details.
 
-Use Python 3.10+ and manually extract CIFAKE into `datasets/CIFAKE/`, containing
-`train/REAL`, `train/FAKE`, `test/REAL`, and `test/FAKE`. Run these commands from
-the repository root in Windows PowerShell:
+### Connection to EECS 351
+
+| Course concept | Implemented work |
+| --- | --- |
+| Basis representations and frequency analysis | FFT/DCT/DWT image analysis and energy features. |
+| Linear filtering | A separate synthetic demonstration uses a separable 25-tap FIR low-pass filter and high-pass residual. |
+| Sampling and aliasing | The same synthetic signal is downsampled by 2 with and without prefiltering. |
+| Out-of-class technique | Logistic Regression is planned; it has not been trained or evaluated. |
+
+The [filtering and sampling figure](docs/figures/filtering_sampling.png) is explicitly
+synthetic and does not modify dataset images. We do not automatically count the
+three transforms as three distinct in-class requirements; confirm coverage with
+the instructor.
+
+## Results and Discussion
+
+Both experiments used seed **42**, balanced class counts, and **no skipped images**.
+Tables show **mean +/- sample standard deviation**. Ratios are fractions.
+
+### Experiment 1: CIFAKE
+
+Processed **1,000 REAL + 1,000 FAKE training images** and exported features for
+**200 REAL + 200 FAKE test images**. These comparisons use training data only.
+
+![CIFAKE REAL and FAKE grayscale examples with centered FFT, DCT, and two-level DWT visualizations](docs/figures/transforms.png)
+
+*First valid selected training image per class; color limits are shared within
+each transform column. These images illustrate the representations.*
+
+| Feature | REAL (n=1,000) | FAKE (n=1,000) |
+| --- | --- | --- |
+| FFT high-frequency energy ratio | 0.03065 +/- 0.02089 | 0.04441 +/- 0.02464 |
+| DCT high-frequency energy ratio | 0.16170 +/- 0.08762 | 0.21359 +/- 0.10611 |
+| DWT level-1 detail-energy ratio | 0.18446 +/- 0.06100 | 0.24996 +/- 0.08083 |
+
+![CIFAKE training distributions of FFT high-frequency, DCT high-frequency, and fine-scale wavelet energy ratios](docs/figures/train_distributions.png)
+
+*Common bins and per-class normalization. FAKE means are higher for these three
+features in this training subset, with substantial overlap.*
+
+[All 11 feature summaries](docs/results/train_summary.csv) |
+[Counts and configuration](docs/results/metadata.json)
+
+### Experiment 2: RajuFace
+
+A **10 REAL + 10 FAKE test-split demo** passed before the initial
+**200 REAL + 200 FAKE test-split analysis**. Images remained 256x256. The demo and
+initial samples overlap and are not independent experiments.
+
+![RajuFace REAL and FAKE original RGB, grayscale, FFT, DCT, and DWT examples at native 256 by 256 resolution](docs/figures/rajuface_transforms.png)
+
+*First valid image per class after seeded buffer sampling: test indices 28 (REAL)
+and 57 (FAKE). They were not selected to maximize visible differences.*
+
+| Feature | REAL (n=200) | FAKE (n=200) |
+| --- | --- | --- |
+| FFT high-frequency energy ratio | 0.01181 +/- 0.00707 | 0.01085 +/- 0.00739 |
+| DCT high-frequency energy ratio | 0.03140 +/- 0.01750 | 0.02915 +/- 0.01780 |
+| DWT level-1 detail-energy ratio | 0.40652 +/- 0.06589 | 0.39717 +/- 0.06579 |
+
+![RajuFace sampled test distributions of FFT high-frequency, DCT high-frequency, and fine-scale wavelet energy ratios with 200 images per class](docs/figures/rajuface_distributions.png)
+
+*REAL means are slightly higher for these features in this subset. Distributions
+overlap substantially. These are exploratory test-subset statistics; no model or
+thresholds were tuned on these data.*
+
+[All 11 feature summaries](docs/results/rajuface_test_summary.csv) |
+[Schema, commit, counts, and configuration](docs/results/rajuface_metadata.json)
+
+### Interpretation
+
+Individual transform plots can look similar because they show aggregate frequency
+structure on a logarithmic scale. Subtle numerical differences may still help a
+classifier, but visual similarity alone neither proves nor rules out useful
+classification. The direction of these mean differences changes between datasets;
+this does not isolate a generator effect. **No accuracy, precision, recall, F1,
+or confusion matrix is available.** Held-out classification is needed to evaluate
+feature usefulness.
+
+## Installation
+
+Use **Python 3.10+**. Direct dependencies are NumPy, SciPy, PyWavelets, Matplotlib,
+Pillow, and Hugging Face `datasets`; versions are in `requirements.txt`.
+Run from the repository root in Windows PowerShell:
 
 ```powershell
 py -3 -m venv .venv
 .venv/Scripts/python.exe -m pip install -r requirements.txt
+```
 
-# Small demo: 5 images per class in train, 2 per class in test
-.venv/Scripts/python.exe demo.py
+On macOS/Linux, use `python3 -m venv .venv` and `.venv/bin/python` below.
+Manually extract CIFAKE into `datasets/CIFAKE/{train,test}/{REAL,FAKE}/`.
+RajuFace requires network access and streams through Hugging Face; the full dataset
+is not downloaded automatically.
 
-# Reproduce the 2,000-train / 400-test experiment above
-.venv/Scripts/python.exe -m src.task1 --train-per-class 1000 --test-per-class 200 --seed 42
+## Usage
 
-# Mathematical and data-integrity checks
+Each command performs feature extraction, descriptive analysis, and figure export.
+Choose fresh output directories to preserve prior runs.
+
+```powershell
+# CIFAKE demo: 5/class train, 2/class test
+.venv/Scripts/python.exe demo.py --output-dir outputs/cifake-demo-new
+
+# CIFAKE experiment: 1,000/class train, 200/class test
+.venv/Scripts/python.exe -m src.task1 --train-per-class 1000 --test-per-class 200 --seed 42 --output-dir outputs/cifake-run-new
+
+# RajuFace: run the 10/class demo first; continue only after it passes
+$env:HF_HOME = Join-Path (Get-Location) '.cache/huggingface'
+$rajuRevision = '1f99c8e831601e3a300dd3de670df23384a9be6c'
+.venv/Scripts/python.exe -m src.rajuface --per-class 10 --seed 42 --revision $rajuRevision --output-dir outputs/rajuface/demo-new
+.venv/Scripts/python.exe -m src.rajuface --per-class 200 --seed 42 --revision $rajuRevision --output-dir outputs/rajuface/initial-new
+
+# Offline mathematical, sampling, and export checks
 .venv/Scripts/python.exe -m unittest discover -s tests -v
 ```
 
-Use `--data-dir` to choose another extracted dataset location. On macOS/Linux,
-create the environment with `python3 -m venv .venv` and use `.venv/bin/python`.
-The demo writes to `outputs/demo/`; the standard experiment writes to `outputs/`:
+Use `--data-dir` for another CIFAKE location. RajuFace supports `--dataset-id`,
+`--split`, `--revision`, `--buffer-size`, and `--max-scan`; it rejects existing
+output directories. Defaults are a 128-row encoded shuffle buffer and a maximum
+scan of 10,000 source rows. Sampling has prefix/order bias and is not uniform over
+the full split. Balance failures or unrecoverable network errors stop the run
+without publishing partial results. See the [CIFAKE](docs/task1.md) and
+[RajuFace](docs/rajuface.md) guides for details.
 
-- `features/train_features.csv` and `features/test_features.csv`: one row per
-  image, with its relative path, split, label, and the same 11 feature columns.
-- `features/train_summary.csv`: training-only class means and standard deviations.
-- `figures/`: the three figures above.
-- `metadata.json`: reproducibility settings and processing counts.
+Runs save feature CSVs, class summaries, figures, and reproducibility metadata.
+Datasets and `outputs/` are Git-ignored; selected publication copies are in `docs/`.
+**28 tests passed** in the existing validation, alongside both live RajuFace runs
+and a CIFAKE smoke run. There is no classification command yet.
 
-All **16 tests passed**, covering transform properties, constant images,
-deterministic balanced sampling, corrupt-image handling, split separation, and
-CSV output. The full 120,000-image run is supported with `--all`, but has not been
-executed for the results reported here. The figure and summary copies under
-`docs/` preserve this experiment for GitHub; new runs write to `outputs/`.
+## Project Structure
 
-### Limitations and next steps
+```text
+demo.py                  Small CIFAKE run
+requirements.txt         Runtime dependencies
+src/
+  dataset.py             CIFAKE loading and shared grayscale preprocessing
+  rajuface_dataset.py    Schema validation and balanced HF streaming
+  dsp_features.py        Shared FFT, DCT, DWT and 11-feature extractor
+  analysis.py            Summaries and saved figures
+  task1.py               CIFAKE CLI
+  rajuface.py            RajuFace CLI
+tests/                   CIFAKE and RajuFace validation
+docs/
+  task1.md               CIFAKE technical guide
+  rajuface.md            RajuFace technical guide
+  figures/               Selected experiment figures for publication
+  results/               Compact summaries and experiment metadata
+  *.pdf                  Original course requirements and project proposal
+datasets/                Local data (ignored)
+outputs/                 Generated runs (ignored)
+```
 
-CIFAKE's low resolution, compression, preprocessing, and wavelet boundary effects
-can influence these features. Its FAKE class comes from Stable Diffusion 1.4;
-these results do not establish generalization to other generators. We will next
-use the exported features for Logistic Regression and evaluate on the held-out
-test partition. No classifier has been trained in Task 1.
+## Limitations and Future Work
 
-References: [CIFAKE original paper](https://arxiv.org/abs/2303.14126) and
-[CIFAR-10 source and original report](https://www.cs.toronto.edu/~kriz/cifar.html).
+- CIFAKE's 32x32 resolution and wavelet boundary effects limit fine-detail analysis.
+- Handcrafted features may capture compression, content, or generator-specific
+  artifacts. Normalized frequency bands do not remove resolution dependence.
+- RajuFace sampling can reflect source ordering; larger and more diverse samples
+  are needed. The optional 1,000-per-class experiment has not been run.
+- Overlapping distributions do not establish detection accuracy. We plan Logistic
+  Regression with training-only scaling and held-out evaluation, followed by an
+  SVM comparison if time permits.
+- Future studies include radial power profiles, unseen generators, cross-dataset
+  evaluation, and sensitivity to compression/resizing. CIFAKE model compatibility
+  must be verified; downsampling to 32x32 removes detail and belongs in a separate
+  experiment from native-resolution analysis.
+
+## Team Contributions
+
+Team names are recorded in existing documentation. Individual contributions have
+not been documented and must be completed by the team.
+
+| Team member | Contribution |
+| --- | --- |
+| Ethan Kocheril | To be completed by the team. |
+| Jiayuan Zhu | To be completed by the team. |
+| Zhirui Wang | To be completed by the team. |
+| Ziyi Xie | To be completed by the team. |
+
+## GitHub Pages and Documentation
+
+The [live project website](https://eecs351-team.github.io/EECS351-project/) was
+verified to serve the team's current root README through Jekyll. The public `main`
+tree has `README.md` as its only page entry file, and the live page matches its
+headings and figures. **Commit and push the updated README and referenced assets
+to `eecs351-team/EECS351-project` on `main` to update the existing site.** A local
+edit alone does not update GitHub. Keep the existing publishing method; no new
+website files, theme, or deployment workflow are needed.
+
+Local `origin` currently points to `har4yyyy/EECS351-project`; confirm the destination
+before publishing to the team repository. Check **Settings > Pages** for deployment
+status and **Visit site** for the published page. No remote settings were changed
+and these local documentation changes have not been pushed.
+
+Preview Markdown in the IDE or GitHub. To check project-path asset URLs locally,
+run `python -m http.server 8000 --directory ..` from the repository root and open
+`http://localhost:8000/EECS351-project/`. This serves source files; it does not
+render Markdown or reproduce a Jekyll theme. See
+[GitHub's entry-file guidance](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site).
+
+## References
+
+- J. J. Bird and A. Lotfi, *CIFAKE: Image Classification and Explainable
+  Identification of AI-Generated Synthetic Images*, 2023.
+  [Paper](https://arxiv.org/abs/2303.14126); dataset linked above.
+- A. Krizhevsky, *Learning Multiple Layers of Features from Tiny Images*, 2009.
+  [CIFAR-10 source and report](https://www.cs.toronto.edu/~kriz/cifar.html).
+- RajuFace, *140k Real and Fake Faces*.
+  [Dataset card, label definitions, and source attribution](https://huggingface.co/datasets/RajuFace/140k-Real-and-Fake-Faces).

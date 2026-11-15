@@ -31,9 +31,14 @@ def validate_dataset(root: Path) -> Path:
 def load_image(path: Path, expected_shape: tuple[int, int] = (32, 32)) -> np.ndarray:
     """Pillow RGB -> ITU-R 601 L grayscale, then float64 / 255."""
     with Image.open(path) as image:
-        if (image.height, image.width) != expected_shape:
-            raise ValueError(f"Expected {expected_shape}, got {(image.height, image.width)}")
-        return np.asarray(image.convert("RGB").convert("L"), dtype=np.float64) / 255.0
+        return preprocess_image(image, expected_shape)
+
+
+def preprocess_image(image: Image.Image, expected_shape: tuple[int, int]) -> np.ndarray:
+    """Shared native-resolution preprocessing for file and streamed PIL images."""
+    if (image.height, image.width) != expected_shape:
+        raise ValueError(f"Expected {expected_shape}, got {(image.height, image.width)}")
+    return np.asarray(image.convert("RGB").convert("L"), dtype=np.float64) / 255.0
 
 
 def iter_images(root: Path, split: str, per_class: int | None, seed: int,

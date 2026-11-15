@@ -17,7 +17,8 @@ from .dsp_features import (
 )
 
 
-def plot_transforms(representatives: dict, destination: Path) -> None:
+def plot_transforms(representatives: dict, destination: Path, *, originals: dict | None = None,
+                    title: str = "Training examples (first valid sample per class; no numerical resizing)") -> None:
     """Use the same color scale for REAL and FAKE in each transform column."""
     panels = []
     for label in LABELS.values():
@@ -28,21 +29,27 @@ def plot_transforms(representatives: dict, destination: Path) -> None:
                        np.log1p(np.abs(wavelets))])
     titles = ["Grayscale [0, 1]", "FFT: log(1 + |F|)",
               "DCT: log(1 + |C|)", "DWT db4, L2: log(1 + |c|)"]
-    fig, axes = plt.subplots(2, 4, figsize=(13, 6), layout="constrained")
-    for col, title in enumerate(titles):
-        vmax = 1 if col == 0 else max(row[col].max() for row in panels)
+    if originals is not None:
+        panels = [[np.asarray(originals[label]), *row]
+                  for label, row in zip(LABELS.values(), panels)]
+        titles.insert(0, "Original RGB")
+    fig, axes = plt.subplots(2, len(titles), figsize=(3.25 * len(titles), 6), layout="constrained")
+    for col, column_title in enumerate(titles):
+        is_image = col < (2 if originals is not None else 1)
+        vmax = 1 if is_image else max(row[col].max() for row in panels)
         for row, (name, label) in enumerate(LABELS.items()):
             ax = axes[row, col]
-            artist = ax.imshow(panels[row][col], cmap="gray" if col == 0 else "magma",
+            artist = ax.imshow(panels[row][col], cmap="gray" if is_image else "magma",
                                vmin=0, vmax=max(vmax, 1e-12), interpolation="nearest")
-            ax.set_title(title if row == 0 else "")
+            ax.set_title(column_title if row == 0 else "")
             ax.set_xticks([])
             ax.set_yticks([])
             if col == 0:
                 ax.set_ylabel(name)
                 ax.set_xlabel(Path(representatives[label][0]).name, fontsize=8)
-        fig.colorbar(artist, ax=axes[:, col], shrink=0.65)
-    fig.suptitle("Training examples (first valid sample per class; no numerical resizing)")
+        if originals is None or col != 0:
+            fig.colorbar(artist, ax=axes[:, col], shrink=0.65)
+    fig.suptitle(title)
     fig.savefig(destination, dpi=200)
     plt.close(fig)
 
@@ -59,7 +66,8 @@ def summarize_training(groups: dict[int, np.ndarray], destination: Path) -> None
                 writer.writerow([name, label, feature, len(data), data[:, index].mean(), std])
 
 
-def plot_distributions(groups: dict[int, np.ndarray], destination: Path) -> None:
+def plot_distributions(groups: dict[int, np.ndarray], destination: Path, *,
+                       title: str = "Training subset only; common bins and per-class normalization") -> None:
     chosen = ["fft_high_energy_ratio", "dct_high_energy_ratio", "dwt_level1_energy_ratio"]
     fig, axes = plt.subplots(1, 3, figsize=(12, 3.8), layout="constrained")
     for ax, feature in zip(axes, chosen):
@@ -73,7 +81,7 @@ def plot_distributions(groups: dict[int, np.ndarray], destination: Path) -> None
                     alpha=0.5, color=color, label=f"{name} (n={len(values)})")
         ax.set(xlabel=feature.replace("_", " "), ylabel="Fraction of class", xlim=(0, upper))
         ax.legend(fontsize=8)
-    fig.suptitle("Training subset only; common bins and per-class normalization")
+    fig.suptitle(title)
     fig.savefig(destination, dpi=200)
     plt.close(fig)
 

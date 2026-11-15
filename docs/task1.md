@@ -79,7 +79,7 @@ src/
   task1.py          # CLI, CSV export, and pipeline orchestration
 tests/test_task1.py # mathematical and data-integrity checks
 demo.py             # same pipeline with smaller defaults
-requirements.txt    # five runtime dependencies
+requirements.txt    # DSP dependencies plus datasets for the RajuFace extension
 ```
 
 There are no configuration frameworks or custom class hierarchies. Data are read
