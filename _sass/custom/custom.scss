@@ -34,3 +34,21 @@
     white-space: nowrap;
   }
 }
+
+// Full-width layout: by default the theme caps content at 50rem and centers the page on
+// wide screens. Pin the sidebar to the left edge and let the content fill the rest.
+@include mq(md) {
+  .main {
+    max-width: none;
+  }
+}
+
+@include mq(lg) {
+  .side-bar {
+    width: $nav-width;
+  }
+
+  .side-bar + .main {
+    margin-left: $nav-width;
+  }
+}
