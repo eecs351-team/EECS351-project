@@ -1,0 +1,32 @@
+// Small additions to the Just the Docs defaults.
+
+// Figures: centered image with a numbered caption underneath.
+.figure {
+  margin: 1.5rem 0;
+  text-align: center;
+
+  img {
+    max-width: 100%;
+    border: 1px solid $border-color;
+    border-radius: 4px;
+  }
+
+  .caption {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: $grey-dk-000;
+    text-align: left;
+  }
+}
+
+// Short summary line under a page title.
+.lead {
+  font-size: 1.125rem;
+  font-weight: 300;
+}
+
+// Course-requirement table on the home page.
+.cheat-sheet td:first-child {
+  white-space: nowrap;
+  font-weight: 500;
+}

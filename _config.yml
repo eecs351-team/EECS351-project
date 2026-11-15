@@ -1,0 +1,83 @@
+# GitHub Pages site configuration (Just the Docs theme).
+# Pages builds this file from the root of the main branch; no workflow is needed.
+
+title: AI-Generated Image Detection
+description: >-
+  EECS 351 Fall 2026 project at the University of Michigan: can compact,
+  interpretable FFT, DCT, and DWT features help distinguish real and
+  AI-generated images?
+baseurl: "/EECS351-project"
+url: "https://eecs351-team.github.io"
+
+# Pin the theme release so the site does not change when the theme's main branch does.
+remote_theme: just-the-docs/just-the-docs@v0.12.0
+plugins:
+  - jekyll-remote-theme
+  - jekyll-relative-links
+  - jekyll-seo-tag
+  - jekyll-include-cache
+
+color_scheme: light
+search_enabled: true
+heading_anchors: true
+back_to_top: true
+back_to_top_text: "Back to top"
+
+aux_links:
+  "GitHub repository":
+    - "https://github.com/eecs351-team/EECS351-project"
+aux_links_new_tab: true
+
+footer_content: >-
+  EECS 351: Digital Signal Processing &middot; Fall 2026 &middot; University of Michigan
+  &middot; Ethan Kocheril, Jiayuan Zhu, Zhirui Wang, Ziyi Xie
+
+gh_edit_link: true
+gh_edit_link_text: "Edit this page on GitHub"
+gh_edit_repository: "https://github.com/eecs351-team/EECS351-project"
+gh_edit_branch: "main"
+gh_edit_view_mode: "edit"
+
+callouts:
+  note:
+    title: Note
+    color: blue
+  status:
+    title: Status
+    color: yellow
+  planned:
+    title: Planned
+    color: purple
+
+kramdown:
+  input: GFM
+  math_engine: mathjax
+  syntax_highlighter: rouge
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+
+relative_links:
+  enabled: true
+  collections: false
+
+# Code, data, and generated outputs are not website pages.
+exclude:
+  - README.md
+  - src/
+  - tests/
+  - demo.py
+  - requirements.txt
+  - datasets/
+  - data/
+  - outputs/
+  - tmp/
+  - .venv/
+  - .cache/
+  - Gemfile
+  - Gemfile.lock
+  - vendor/
+  - node_modules/

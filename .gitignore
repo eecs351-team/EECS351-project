@@ -9,3 +9,8 @@ __pycache__/
 /outputs/
 /tmp/
 # Keep selected report figures explicitly, e.g. docs/figures/*.png.
+
+# Jekyll site build output
+_site/
+.jekyll-cache/
+.sass-cache/

@@ -1,0 +1,11 @@
+{%- comment -%}
+Usage:
+{% include figure.html src="/docs/figures/transforms.png" alt="Short description" caption="**Figure 1.** Caption text." %}
+src is a site path starting with "/"; caption accepts Markdown.
+{%- endcomment -%}
+<figure class="figure">
+  <a href="{{ include.src | relative_url }}"><img src="{{ include.src | relative_url }}" alt="{{ include.alt | escape }}" loading="lazy"></a>
+  {%- if include.caption %}
+  <figcaption class="caption">{{ include.caption | markdownify | remove: "<p>" | remove: "</p>" }}</figcaption>
+  {%- endif %}
+</figure>

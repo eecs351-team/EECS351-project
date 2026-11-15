@@ -1,3 +1,9 @@
+---
+title: CIFAKE technical guide
+parent: Reproducibility
+nav_order: 1
+---
+
 # Task 1: Technical Guide
 
 Ethan Kocheril, Jiayuan Zhu, Zhirui Wang, Ziyi Xie

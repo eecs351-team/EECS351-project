@@ -250,24 +250,44 @@ not been documented and must be completed by the team.
 
 ## GitHub Pages and Documentation
 
-The [live project website](https://eecs351-team.github.io/EECS351-project/) was
-verified to serve the team's current root README through Jekyll. The public `main`
-tree has `README.md` as its only page entry file, and the live page matches its
-headings and figures. **Commit and push the updated README and referenced assets
-to `eecs351-team/EECS351-project` on `main` to update the existing site.** A local
-edit alone does not update GitHub. Keep the existing publishing method; no new
-website files, theme, or deployment workflow are needed.
+The [project website](https://eecs351-team.github.io/EECS351-project/) is built by
+GitHub Pages from the root of `main` with the
+[Just the Docs](https://just-the-docs.com/) Jekyll theme. No build workflow is needed:
+pushing to `main` rebuilds the site, and **Settings > Pages** shows the deployment
+status. This README is the repository overview and is not a website page.
 
-Local `origin` currently points to `har4yyyy/EECS351-project`; confirm the destination
-before publishing to the team repository. Check **Settings > Pages** for deployment
-status and **Visit site** for the published page. No remote settings were changed
-and these local documentation changes have not been pushed.
+```text
+_config.yml              Site settings, theme version, navigation links, footer
+index.md                 Home page and grader cheat sheet
+pages/                   One Markdown file per website page
+  methods/, results/     Section pages; index.md is the section landing page
+docs/task1.md, rajuface.md   Technical guides (listed under Reproducibility)
+docs/figures/            Figures shown on the site
+_includes/               figure.html (numbered figures) and MathJax setup
+_sass/custom/custom.scss Small style additions
+```
 
-Preview Markdown in the IDE or GitHub. To check project-path asset URLs locally,
-run `python -m http.server 8000 --directory ..` from the repository root and open
-`http://localhost:8000/EECS351-project/`. This serves source files; it does not
-render Markdown or reproduce a Jekyll theme. See
-[GitHub's entry-file guidance](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site).
+To edit a page, change its Markdown file. To add a page, create a `.md` file in `pages/`
+with front matter such as:
+
+```yaml
+---
+title: New page
+nav_order: 5          # position in the sidebar
+parent: Results       # optional: nest under a section
+---
+```
+
+Link between pages with relative `.md` paths (for example `[Datasets](datasets.md)`);
+GitHub Pages converts them to site URLs. Add figures with
+`{% include figure.html src="/docs/figures/name.png" alt="..." caption="**Figure N.** ..." %}`
+and math with `$$ ... $$`. Code, data, and this README are excluded from the site in
+`_config.yml`.
+
+To preview locally (optional; requires Ruby), create a `Gemfile` containing
+`source "https://rubygems.org"` and `gem "github-pages", group: :jekyll_plugins`, then run
+`bundle install` and `bundle exec jekyll serve` and open
+`http://localhost:4000/EECS351-project/`. Otherwise, push and check the live site.
 
 ## References
 

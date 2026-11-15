@@ -1,3 +1,9 @@
+---
+title: RajuFace technical guide
+parent: Reproducibility
+nav_order: 2
+---
+
 # RajuFace: Native-Resolution Technical Guide
 
 The same DSP extractor now supports
@@ -11,7 +17,7 @@ metadata and never enter the numerical feature extractor.
 ## Reproduce
 
 Run the small demo first and proceed only if it succeeds. Use the Python and
-virtual environment setup in the [README](../README.md#installation), including
+virtual environment setup in the [installation instructions](../pages/reproducibility.md#installation), including
 the `datasets` dependency in `requirements.txt`.
 The commands below pin the dataset commit used for the reported measurements:
 
@@ -139,4 +145,4 @@ original experiment outputs remain unchanged in `outputs/rajuface/initial/`.
 - [Complete test-subset summary](results/rajuface_test_summary.csv).
 - [Dataset schema, commit, settings, and counts](results/rajuface_metadata.json).
 
-Return to the [project overview](../README.md).
+Return to the [project overview](../index.md).
