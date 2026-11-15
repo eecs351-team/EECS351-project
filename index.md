@@ -32,7 +32,7 @@ learning.
 
 {: .status }
 **Completed:** reproducible DSP extraction, balanced sampling, CSV exports, and REAL/FAKE
-comparisons on CIFAKE and RajuFace.
+comparisons on CIFAKE and RajuFace.<br>
 **Planned:** Logistic Regression, a possible SVM comparison, and classifier generalization
 tests. No trained model or classification performance is available yet.
 

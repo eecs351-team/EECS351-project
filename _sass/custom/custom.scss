@@ -26,7 +26,11 @@
 }
 
 // Course-requirement table on the home page.
+// Keep the first column on one line only on wide screens; on phones it squeezed the other columns.
 .cheat-sheet td:first-child {
-  white-space: nowrap;
   font-weight: 500;
+
+  @include mq(md) {
+    white-space: nowrap;
+  }
 }
