@@ -1,5 +1,5 @@
 ---
-title: DCT
+title: Cosine transform (DCT)
 parent: Methods
 nav_order: 2
 ---
@@ -40,10 +40,10 @@ The DC coefficient is removed, and energies are divided by the total AC energy.
 | `dct_ac_concentration` | $$\sum_i p_i^2$$, where $$p_i$$ are the normalized AC coefficient energies |
 
 `dct_ac_concentration` is near 1 when the AC energy is concentrated in a few cosine
-coefficients; smaller values indicate more distributed energy. Because the FFT is
+coefficients; smaller values indicate more distributed energy. Because the Fourier transform (FFT) is
 unnormalized and the DCT is orthonormal, their raw energy totals should not be compared
 without normalization.
 
 ## Example
 
-{% include figure.html src="/docs/figures/transforms.png" alt="CIFAKE REAL and FAKE grayscale examples with centered FFT, DCT, and two-level DWT visualizations" caption="**Figure 3.** The DCT column shows `log(1 + |C[k,l]|)` for one REAL and one FAKE CIFAKE image. Low frequencies are in the upper-left corner." %}
+{% include figure.html src="/docs/figures/transforms.png" alt="CIFAKE REAL and FAKE grayscale examples with centered Fourier, cosine, and two-level wavelet transform visualizations" caption="**Figure 1.** The DCT column shows `log(1 + |C[k,l]|)` for one REAL and one FAKE CIFAKE image. Low frequencies are in the upper-left corner." %}

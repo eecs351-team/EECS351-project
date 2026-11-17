@@ -1,5 +1,5 @@
 ---
-title: FFT
+title: Fourier transform (FFT)
 parent: Methods
 nav_order: 1
 ---
@@ -48,6 +48,6 @@ The three ratios sum to 1 whenever the non-DC energy exceeds `1e-24`; otherwise 
 
 ## Example
 
-{% include figure.html src="/finalization-task-1.png" alt="Early FFT magnitude example of a CIFAKE image" caption="**Figure 2.** Early prototype output: a CIFAKE input image and its centered FFT magnitude. Energy concentrates near the center (low frequencies)." %}
+{% include figure.html src="/finalization-task-1.png" alt="Early FFT magnitude example of a CIFAKE image" caption="**Figure 1.** Early prototype output: a CIFAKE input image and its centered FFT magnitude. Energy concentrates near the center (low frequencies)." %}
 
 The reproducible pipeline figures for both datasets are on the [Results](../results/index.md) pages.

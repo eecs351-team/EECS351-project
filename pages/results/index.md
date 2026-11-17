@@ -8,36 +8,35 @@ has_toc: false
 # Results and discussion
 {: .no_toc }
 
-Descriptive feature statistics for REAL and FAKE images in two experiments.
+What the frequency analysis shows for real and generated faces.
 {: .lead }
 
-Both experiments used seed **42**, balanced class counts, and **no skipped images**. Tables
-show **mean +/- sample standard deviation**; ratios are fractions.
+| Experiment | Data | Page |
+| --- | --- | --- |
+| **Faces (main)** | 140k Real and Fake Faces, 256x256, StyleGAN; 5,000 training images per class | [Face frequency analysis](rajuface.md) |
+| Method check | CIFAKE, 32x32, Stable Diffusion 1.4; 1,000 training images per class | [CIFAKE](cifake.md) |
 
-| Experiment | Data | Samples | Page |
-| --- | --- | --- | --- |
-| 1 | CIFAKE, 32x32, Stable Diffusion 1.4 | 1,000 REAL + 1,000 FAKE training images | [CIFAKE](cifake.md) |
-| 2 | RajuFace, 256x256, StyleGAN | 200 REAL + 200 FAKE test-split images | [RajuFace](rajuface.md) |
+Classifier accuracy is on the [Classification](../classification.md) page.
 
-## Summary of the three headline features
+## Main findings so far
 
-| Feature | CIFAKE REAL | CIFAKE FAKE | RajuFace REAL | RajuFace FAKE |
-| --- | --- | --- | --- | --- |
-| FFT high-frequency energy ratio | 0.03065 +/- 0.02089 | 0.04441 +/- 0.02464 | 0.01181 +/- 0.00707 | 0.01085 +/- 0.00739 |
-| DCT high-frequency energy ratio | 0.16170 +/- 0.08762 | 0.21359 +/- 0.10611 | 0.03140 +/- 0.01750 | 0.02915 +/- 0.01780 |
-| DWT level-1 detail-energy ratio | 0.18446 +/- 0.06100 | 0.24996 +/- 0.08083 | 0.40652 +/- 0.06589 | 0.39717 +/- 0.06579 |
+1. **Real and generated faces have very similar spectra.** Their average Fourier spectra show
+   no obvious generator "fingerprint", such as a grid of bright spots. Generated faces have
+   slightly less fine detail on average.
+2. **The difference is in the shape of the spectrum.** Features that keep the shape of the
+   spectrum detect generated faces much better than three wide frequency bands: 68.2% vs. 55.5%
+   test accuracy with Logistic Regression, and up to **74.2%** with a radial basis function
+   Support Vector Machine.
+3. **Careful signal processing matters.** A Hann window before the Fourier transform removes
+   edge artifacts (spectral leakage) and raised accuracy by about 3 points.
+4. **The differences are concentrated in the middle of the face.** The eye row and the
+   mouth-and-chin rows differ most; the background corners differ least.
 
-## Interpretation
+## Why accuracy is limited
 
-Individual transform plots can look similar because they show aggregate frequency structure on
-a logarithmic scale. Subtle numerical differences may still help a classifier, but visual
-similarity alone neither proves nor rules out useful classification.
-
-On CIFAKE, FAKE means are higher for all three features; on RajuFace, REAL means are slightly
-higher. The direction of the mean differences changes between datasets, and the datasets also
-differ in content, resolution, and sources, so this does not isolate a generator effect. In
-both experiments the class distributions overlap substantially.
-
-{: .status }
-**No accuracy, precision, recall, F1, or confusion matrix is available yet.** Held-out
-classification is needed to evaluate feature usefulness; see [Classification](../classification.md).
+Published frequency-based detectors report much higher accuracy on full-resolution generated
+faces [[2]](../references.md). In
+this dataset, every image was shrunk to 256x256 and saved as JPEG before we received it.
+Shrinking acts as a low-pass filter and removes the finest detail, which is where generator
+traces are usually reported. This is our main explanation for the modest accuracy, and we
+plan to test it with the resizing experiment described on the [Progress](../progress.md) page.

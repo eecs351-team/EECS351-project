@@ -1,5 +1,5 @@
 ---
-title: DWT
+title: Wavelet transform (DWT)
 parent: Methods
 nav_order: 3
 ---
@@ -43,4 +43,4 @@ claim is made; border effects can be substantial at 32x32.
 
 ## Example
 
-{% include figure.html src="/0000-10-real-dwt.png" alt="Early prototype multilevel DWT layout and coefficients for a REAL CIFAKE image" caption="**Figure 4.** Early prototype: PyWavelets coefficient layout for 1, 2, and 3 decomposition levels (top) and the packed coefficients of a REAL CIFAKE image (bottom). The pipeline uses 2 levels; its REAL/FAKE comparison is in Figure 1 on the home page." %}
+{% include figure.html src="/0000-10-real-dwt.png" alt="Early prototype multilevel DWT layout and coefficients for a REAL CIFAKE image" caption="**Figure 1.** Early prototype: PyWavelets coefficient layout for 1, 2, and 3 decomposition levels (top) and the packed coefficients of a REAL CIFAKE image (bottom). The pipeline uses 2 levels; a REAL/FAKE comparison is on the CIFAKE results page." %}

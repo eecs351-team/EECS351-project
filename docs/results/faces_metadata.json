@@ -1,0 +1,167 @@
+{
+  "dataset": "140k Real and Fake Faces (FFHQ vs StyleGAN), Hugging Face parquet",
+  "train_file": "validation-00000-of-00002.parquet",
+  "test_file": "test-00000-of-00002.parquet",
+  "seed": 42,
+  "labels": {
+    "REAL": 0,
+    "FAKE": 1
+  },
+  "counts": {
+    "train": {
+      "REAL": {
+        "available": 5000,
+        "requested": 5000,
+        "processed": 5000,
+        "skipped": []
+      },
+      "FAKE": {
+        "available": 5000,
+        "requested": 5000,
+        "processed": 5000,
+        "skipped": []
+      }
+    },
+    "test": {
+      "REAL": {
+        "available": 5000,
+        "requested": 1000,
+        "processed": 1000,
+        "skipped": []
+      },
+      "FAKE": {
+        "available": 5000,
+        "requested": 1000,
+        "processed": 1000,
+        "skipped": []
+      }
+    }
+  },
+  "preprocessing": "JPEG -> RGB -> Pillow L (ITU-R 601) -> float64 / 255; native 256x256",
+  "features": {
+    "band": [
+      "fft_low_energy_ratio",
+      "fft_mid_energy_ratio",
+      "fft_high_energy_ratio",
+      "dct_low_energy_ratio",
+      "dct_high_energy_ratio",
+      "dct_ac_concentration",
+      "dwt_horizontal_energy_ratio",
+      "dwt_vertical_energy_ratio",
+      "dwt_diagonal_energy_ratio",
+      "dwt_level1_energy_ratio",
+      "dwt_level2_energy_ratio"
+    ],
+    "fft": [
+      "fft_low_energy_ratio",
+      "fft_mid_energy_ratio",
+      "fft_high_energy_ratio"
+    ],
+    "dct": [
+      "dct_low_energy_ratio",
+      "dct_high_energy_ratio",
+      "dct_ac_concentration"
+    ],
+    "dwt": [
+      "dwt_horizontal_energy_ratio",
+      "dwt_vertical_energy_ratio",
+      "dwt_diagonal_energy_ratio",
+      "dwt_level1_energy_ratio",
+      "dwt_level2_energy_ratio"
+    ],
+    "radial": "log10 mean FFT power in 1-cycle/image rings, k = 1..127",
+    "dct_blocks": "log10 |orthonormal DCT-II| averaged in 8x8 blocks",
+    "grid": [
+      "tile_r0_c0_fft_high_energy_ratio",
+      "tile_r0_c0_dwt_level1_energy_ratio",
+      "tile_r0_c1_fft_high_energy_ratio",
+      "tile_r0_c1_dwt_level1_energy_ratio",
+      "tile_r0_c2_fft_high_energy_ratio",
+      "tile_r0_c2_dwt_level1_energy_ratio",
+      "tile_r0_c3_fft_high_energy_ratio",
+      "tile_r0_c3_dwt_level1_energy_ratio",
+      "tile_r1_c0_fft_high_energy_ratio",
+      "tile_r1_c0_dwt_level1_energy_ratio",
+      "tile_r1_c1_fft_high_energy_ratio",
+      "tile_r1_c1_dwt_level1_energy_ratio",
+      "tile_r1_c2_fft_high_energy_ratio",
+      "tile_r1_c2_dwt_level1_energy_ratio",
+      "tile_r1_c3_fft_high_energy_ratio",
+      "tile_r1_c3_dwt_level1_energy_ratio",
+      "tile_r2_c0_fft_high_energy_ratio",
+      "tile_r2_c0_dwt_level1_energy_ratio",
+      "tile_r2_c1_fft_high_energy_ratio",
+      "tile_r2_c1_dwt_level1_energy_ratio",
+      "tile_r2_c2_fft_high_energy_ratio",
+      "tile_r2_c2_dwt_level1_energy_ratio",
+      "tile_r2_c3_fft_high_energy_ratio",
+      "tile_r2_c3_dwt_level1_energy_ratio",
+      "tile_r3_c0_fft_high_energy_ratio",
+      "tile_r3_c0_dwt_level1_energy_ratio",
+      "tile_r3_c1_fft_high_energy_ratio",
+      "tile_r3_c1_dwt_level1_energy_ratio",
+      "tile_r3_c2_fft_high_energy_ratio",
+      "tile_r3_c2_dwt_level1_energy_ratio",
+      "tile_r3_c3_fft_high_energy_ratio",
+      "tile_r3_c3_dwt_level1_energy_ratio"
+    ],
+    "combined": "band + radial + dct_blocks + grid",
+    "radial_hann": "radial, after a unit-power 2D Hann window",
+    "radial_shape": "radial_hann minus its own mean over rings",
+    "radial_level": "mean of radial_hann over rings (1 value)",
+    "jpeg": "luminance quantization-table sum only (compression control)"
+  },
+  "classifier": "StandardScaler + LogisticRegressionCV (L2, lbfgs), 5-fold CV accuracy over C in [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0]; training only",
+  "jpeg_tables": {
+    "train": {
+      "REAL": {
+        "distinct_tables": 1,
+        "min": 369,
+        "median": 369.0,
+        "max": 369,
+        "most_common": {
+          "369": 5000
+        }
+      },
+      "FAKE": {
+        "distinct_tables": 1,
+        "min": 369,
+        "median": 369.0,
+        "max": 369,
+        "most_common": {
+          "369": 5000
+        }
+      }
+    },
+    "test": {
+      "REAL": {
+        "distinct_tables": 1,
+        "min": 369,
+        "median": 369.0,
+        "max": 369,
+        "most_common": {
+          "369": 1000
+        }
+      },
+      "FAKE": {
+        "distinct_tables": 1,
+        "min": 369,
+        "median": 369.0,
+        "max": 369,
+        "most_common": {
+          "369": 1000
+        }
+      }
+    }
+  },
+  "grid": 4,
+  "versions": {
+    "numpy": "2.4.6",
+    "scipy": "1.17.1",
+    "PyWavelets": "1.9.0",
+    "matplotlib": "3.11.2",
+    "Pillow": "12.3.0",
+    "pyarrow": "26.0.1",
+    "scikit-learn": "1.9.1"
+  }
+}

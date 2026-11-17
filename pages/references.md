@@ -27,3 +27,9 @@ nav_order: 10
    [CIFAR-10 source and report](https://www.cs.toronto.edu/~kriz/cifar.html).
 7. RajuFace, *140k Real and Fake Faces*.
    [Dataset card, label definitions, and source attribution](https://huggingface.co/datasets/RajuFace/140k-Real-and-Fake-Faces).
+8. J. Frank, T. Eisenhofer, L. Schönherr, A. Fischer, D. Kolossa, and T. Holz, "Leveraging
+   frequency analysis for deep fake image recognition," in *Proceedings of the 37th International
+   Conference on Machine Learning (ICML)*, 2020. [arXiv:2003.08685](https://arxiv.org/abs/2003.08685).
+9. T. Karras, S. Laine, and T. Aila, "A style-based generator architecture for generative
+   adversarial networks," in *Proceedings of the IEEE/CVF Conference on Computer Vision and
+   Pattern Recognition (CVPR)*, 2019. [arXiv:1812.04948](https://arxiv.org/abs/1812.04948).

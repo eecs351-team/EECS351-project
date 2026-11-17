@@ -1,0 +1,86 @@
+{
+  "features_dir": "outputs/faces_hann/features",
+  "seed": 42,
+  "counts": {
+    "train": 10000,
+    "test": 2000
+  },
+  "feature_sets": {
+    "band": "All 11 band ratios",
+    "radial_hann": "Radial FFT, Hann window (127)",
+    "combined": "Combined spectral (1194)"
+  },
+  "preprocessing": "StandardScaler; sets with more than 200 features then PCA to 100 components (fit on training folds)",
+  "model_selection": "GridSearchCV, accuracy, StratifiedKFold(5, shuffle) on training only",
+  "grid_note": "svm_rbf gamma values are multiples of 1 / (number of model inputs)",
+  "grids": {
+    "lr": {
+      "C": [
+        0.0001,
+        0.001,
+        0.01,
+        0.1,
+        1.0,
+        10.0,
+        100.0,
+        1000.0
+      ]
+    },
+    "svm_linear": {
+      "C": [
+        0.0001,
+        0.001,
+        0.01,
+        0.1,
+        1.0
+      ]
+    },
+    "svm_rbf": {
+      "C": [
+        0.1,
+        1.0,
+        10.0,
+        100.0
+      ],
+      "gamma": [
+        0.01,
+        0.1,
+        1.0,
+        10.0
+      ]
+    },
+    "knn": {
+      "n_neighbors": [
+        5.0,
+        15.0,
+        45.0,
+        135.0
+      ]
+    },
+    "nb": {
+      "var_smoothing": [
+        1e-09
+      ]
+    },
+    "tree": {
+      "max_depth": [
+        3.0,
+        5.0,
+        8.0,
+        12.0,
+        null
+      ],
+      "min_samples_leaf": [
+        1.0,
+        20.0,
+        50.0,
+        100.0,
+        200.0
+      ]
+    }
+  },
+  "versions": {
+    "numpy": "2.4.6",
+    "scikit-learn": "1.9.1"
+  }
+}

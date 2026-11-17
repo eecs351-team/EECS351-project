@@ -15,43 +15,56 @@ What is done, what changed along the way, and what comes next.
 
 | Stage | Status | Notes |
 | --- | --- | --- |
-| Project topic finalized | Done | AI-generated image detection with FFT, DCT, and DWT features and a simple classifier |
-| Dataset: GenImage | Dropped | The split ZIP archive could not be reassembled into a usable file |
-| Dataset: CIFAKE | Done | Small-image baseline at native 32x32 |
-| Prototype FFT / DCT / DWT plots | Done | First grayscale FFT magnitude plots; the early DWT used a 1D decomposition |
-| Reproducible DSP pipeline | Done | Shared 11-feature extractor, balanced seeded sampling, CSV exports, figures, metadata |
-| Experiment 1: CIFAKE | Done | 1,000 per class train, 200 per class test |
-| Experiment 2: RajuFace | Done | 10 per class demo, then 200 per class test-split analysis at 256x256 |
-| Validation tests | Done | 28 offline tests pass |
-| Logistic Regression | Planned | Training-only scaling, held-out evaluation |
-| SVM and other classifiers | Planned | If time permits |
-| Generalization and robustness | Planned | Unseen generators, cross-dataset evaluation, compression and resizing |
+| Project topic finalized | Done | Detect AI-generated images with Fourier, cosine, and wavelet features and a simple classifier |
+| Dataset: GenImage | Dropped | Its split ZIP archive could not be reassembled into a usable file |
+| Dataset: CIFAKE | Done | Used to check the feature extraction on small 32x32 images |
+| Dataset: 140k Real and Fake Faces | Done | Main dataset: 256x256 real and StyleGAN-generated faces |
+| Feature extraction (Task 1) | Done | 11 basic energy-share features from the Fast Fourier, Discrete Cosine, and Discrete Wavelet Transforms |
+| Logistic Regression (Task 2) | Done | Basic features by transform (up to 55.5%), finer frequency features (68.2%), Hann window |
+| Other classifiers (Task 3) | Done | Support Vector Machines, K-Nearest Neighbors, Naive Bayes, Decision Tree; best 74.2% |
+| Final untouched test set | Next | See below |
+| Compression and resizing tests | Next | See below |
+| Noise-residual feature | Next | See below |
+| Explaining the model | Next | See below |
 
 ## What changed from the proposal
 
-- **Dataset.** GenImage was replaced by CIFAKE, and RajuFace (140k Real and Fake Faces)
-  was added to test the same features at a higher resolution and on a GAN generator.
-- **DWT.** The prototype's 1D `wavedec` at level 4 was replaced by a true 2D `wavedec2` at
-  level 2, the maximum useful level for 32x32 images.
-- **Image loading.** Pillow replaced OpenCV for loading and grayscale conversion, which avoids a
-  larger dependency.
-- **Display.** The FFT magnitude now uses a safe `log1p` for display instead of `log`, which
-  fails on zero-magnitude coefficients.
+- **Dataset.** GenImage was replaced by CIFAKE, and then by 140k Real and Fake Faces as the main
+  dataset. CIFAKE's 32x32 images are too small for fine-detail analysis, so it now serves only as
+  a check of the method.
+- **Finer features.** Three wide frequency bands per transform turned out to be too coarse. We
+  added features that keep the shape of the spectrum (see [Methods](methods/index.md)).
+- **Hann window.** We found that edge effects in the Fourier transform (spectral leakage) were
+  hiding real differences, and added a window before the transform.
+- **Wavelet transform.** The prototype's one-dimensional wavelet decomposition was replaced by a
+  true two-dimensional one.
 
 ## Next steps
 
-1. Train Logistic Regression on the CIFAKE training features and evaluate on the held-out test
-   features.
-2. Compare feature groups (FFT, DCT, DWT) and add an SVM comparison if time permits.
-3. Evaluate on RajuFace and other unseen data; study sensitivity to compression and resizing.
-4. Run larger RajuFace samples (the optional 1,000-per-class experiment has not been run).
+1. **Set aside a final test set.** We have looked at our current test images many times while
+   making choices, so they are no longer truly unseen. We will keep a second, untouched set of
+   10,000 test images from the same dataset for one final evaluation, and report every accuracy
+   with a confidence range.
+2. **Test compression and resizing.** We will re-save images with stronger JPEG compression and
+   shrink them to 128x128 and 64x64, once with a low-pass (anti-aliasing) filter before
+   shrinking and once without. This shows how robust the detector is, and tests our explanation
+   that the dataset's own resizing removed most generator traces. It also applies the course's
+   sampling and aliasing topic to real images.
+3. **Try a noise-residual feature.** Subtracting a smoothed (low-pass filtered) copy of each
+   image leaves its fine noise. Camera photographs contain sensor noise that generated images
+   may lack, so the residual's frequency content could help. This applies the course's linear
+   filtering topic.
+4. **Explain the model.** Show which frequencies the Logistic Regression weights rely on, next
+   to where the two classes differ most.
+5. **Final evaluation and report.** Fix the final features and classifiers, evaluate them once
+   on the untouched test set, and summarize what simple frequency features can and cannot do.
 
 ## Limitations
 
-- CIFAKE's 32x32 resolution and wavelet boundary effects limit fine-detail analysis.
-- Handcrafted features may capture compression, content, or generator-specific artifacts.
-  Normalized frequency bands do not remove resolution dependence.
-- RajuFace sampling can reflect source ordering; larger and more diverse samples are needed.
-- Overlapping distributions do not establish detection accuracy.
-- Downsampling RajuFace to 32x32 for CIFAKE model compatibility removes detail and belongs in a
-  separate experiment from native-resolution analysis.
+- The face images were shrunk to 256x256 and saved as JPEG by the dataset authors, which likely
+  removed the finest generator traces.
+- All results come from one dataset and one generator (StyleGAN), so they do not show how well
+  the method works on other generators.
+- Each test accuracy is uncertain by about ±2 percentage points.
+- CIFAKE and the face dataset differ in content, resolution, and generator, so they cannot be
+  compared directly.

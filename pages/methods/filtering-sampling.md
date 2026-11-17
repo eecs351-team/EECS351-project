@@ -17,7 +17,7 @@ feature extraction and does not add features.
 ## Setup
 
 - **Signal:** gratings at 0.08 and 0.40 cycles/pixel.
-- **Low-pass filter:** separable 25-tap Hamming-windowed FIR with cutoff 0.20 cycles/pixel.
+- **Low-pass filter:** separable 25-tap Hamming-windowed finite impulse response (FIR) filter with cutoff 0.20 cycles/pixel.
 - **High-pass residual:** $$I - \text{lowpass}(I)$$.
 - **Sampling:** decimation by 2, with and without prefiltering.
 
@@ -32,4 +32,4 @@ original pixel. Without prefiltering, the 0.40 component aliases to 0.20 cycles 
 The finite FIR filter attenuates content above the new Nyquist before decimation, with a nonzero
 transition band and boundary effects.
 
-{% include figure.html src="/docs/figures/filtering_sampling.png" alt="Synthetic grating filtered by an FIR low-pass filter, its high-pass residual, and decimation with and without prefiltering" caption="**Figure 6.** Synthetic filtering and sampling demonstration." %}
+{% include figure.html src="/docs/figures/filtering_sampling.png" alt="Synthetic grating filtered by an FIR low-pass filter, its high-pass residual, and decimation with and without prefiltering" caption="**Figure 1.** Synthetic filtering and sampling demonstration." %}
