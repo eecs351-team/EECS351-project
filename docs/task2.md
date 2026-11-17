@@ -1,15 +1,28 @@
-# Task 2: 140k Real and Fake Faces
+---
+title: "Task 2: Logistic Regression"
+parent: Progress
+nav_order: 1
+---
+
+# Task 2: Logistic Regression on 140k Real and Fake Faces
 
 Ethan Kocheril, Jiayuan Zhu, Zhirui Wang, Ziyi Xie
 
 CIFAKE's 32x32 images showed only small class differences in Task 1. Task 2 asks
 whether a higher-resolution dataset, finer spectral features, and Logistic
-Regression can separate real photographs from GAN-generated images.
+Regression can separate real photographs from images made by a generative
+adversarial network (GAN).
+
+Abbreviations: FFT = Fast Fourier Transform, DFT = discrete Fourier transform,
+DCT = Discrete Cosine Transform, DWT = Discrete Wavelet Transform, DC = the
+zero-frequency term (average brightness), AC = all other frequencies, CV =
+cross-validation, F1 = the balance of precision and recall, ROC AUC = area under the
+receiver operating characteristic curve (0.5 = chance, 1 = perfect).
 
 ## Data
 
 [140k Real and Fake Faces](https://huggingface.co/datasets/RajuFace/140k-Real-and-Fake-Faces)
-contains 70,000 FFHQ photographs (REAL, label 0) and 70,000 StyleGAN faces
+contains 70,000 FFHQ (Flickr-Faces-HQ) photographs (REAL, label 0) and 70,000 StyleGAN faces
 (FAKE, label 1), all aligned and stored as 256x256 JPEGs in parquet shards.
 Download these two shards (287 MB each) into `datasets/140k/`:
 
@@ -39,7 +52,7 @@ images and the dataset authors resized both classes to 256x256.
 ```
 
 Outputs go to `outputs/faces/` by default: `metrics.csv`, `metadata.json`,
-`features/{train,test}_features.npz`, and seven figures.
+`features/{train,test}_features.npz`, and nine figures.
 
 ## Features
 
@@ -77,14 +90,14 @@ shard only; the test shard is used once.
 | Basic | FFT band ratios | 3 | 0.545 | 0.538 | 0.582 | 0.554 |
 | Basic | DCT band ratios | 3 | 0.533 | 0.529 | 0.578 | 0.543 |
 | Basic | DWT band ratios | 5 | 0.532 | 0.541 | 0.529 | 0.553 |
-| Basic | All 11 band ratios | 11 | 0.576 | 0.554 | 0.563 | 0.583 |
+| Basic | All 11 band ratios | 11 | 0.576 | 0.555 | 0.563 | 0.583 |
 | Extended | Radial FFT spectrum | 127 | 0.613 | 0.600 | 0.600 | 0.628 |
-| Extended | log-DCT blocks | 1024 | 0.673 | 0.649 | 0.653 | 0.718 |
+| Extended | log-DCT blocks | 1024 | 0.673 | 0.650 | 0.653 | 0.718 |
 | Extended | Tile high-frequency | 32 | 0.608 | 0.595 | 0.614 | 0.630 |
 | Extended | Combined | 1194 | 0.694 | **0.682** | 0.688 | 0.752 |
 | Diagnostic | Radial FFT, Hann window | 127 | 0.650 | 0.632 | 0.627 | 0.680 |
 | Diagnostic | Radial shape only (Hann) | 127 | 0.648 | 0.632 | 0.628 | 0.679 |
-| Diagnostic | Radial level only (Hann) | 1 | 0.555 | 0.550 | 0.565 | 0.566 |
+| Diagnostic | Radial level only (Hann) | 1 | 0.555 | 0.551 | 0.565 | 0.566 |
 | Control | JPEG table only | 1 | 0.500 | 0.500 | 0.000 | 0.500 |
 
 ### Basic stage: the proposal's feature-group comparison
@@ -92,7 +105,7 @@ shard only; the test shard is used once.
 ![Accuracy of the band-ratio groups and confusion matrix of the 11-feature model](figures/faces/classification_basic.png)
 
 No single transform stands out: FFT, DCT, and DWT band ratios each reach 53-54%,
-and all 11 together reach 55.4%. The 11-feature model is only slightly biased
+and all 11 together reach 55.5%. The 11-feature model is only slightly biased
 toward FAKE (575 of 1,000 FAKE and 534 of 1,000 REAL correct).
 
 ![Per-feature Cohen's d and standardized Logistic Regression weights](figures/faces/band_features.png)
@@ -156,7 +169,7 @@ Is the useful information the spectrum's overall **level** (how much fine detail
 there is) or its **shape** (how power is spread across frequency)? We split each
 windowed log radial spectrum into its mean over rings (level, one number) and
 the remainder (shape, the spectrum with that mean subtracted). Shape alone keeps
-the full accuracy (0.632). Level alone reaches only 0.550. **The useful
+the full accuracy (0.632). Level alone reaches only 0.551. **The useful
 information is in the spectral shape, not in the overall amount of
 high-frequency energy.** This also explains why the normalized Task 1 band
 ratios are weak. Normalizing does not remove the useful information; three wide
@@ -164,7 +177,7 @@ bands are simply too coarse to describe the shape.
 
 ## Interpretation and limitations
 
-- Finer spectral features beat the Task 1 band ratios (0.682 vs 0.554). The
+- Finer spectral features beat the Task 1 band ratios (0.682 vs 0.555). The
   shape/level split shows that the spectrum's shape carries the signal.
 - Windowing before the FFT is a cheap, standard step that raised radial-spectrum
   accuracy by about 3 points.
@@ -179,6 +192,7 @@ bands are simply too coarse to describe the shape.
 - Training and test images come from different shards of one dataset, so these
   results do not show generalization to other generators.
 - Other classifiers on the same features are compared in [Task 3](task3.md);
-  an RBF SVM reaches 0.742 on the combined set.
+  a radial basis function (RBF) Support Vector Machine (SVM) reaches 0.742 on
+  the combined set.
 - Next step: robustness to re-compression (`--recompress-quality`) and further
   downsampling.

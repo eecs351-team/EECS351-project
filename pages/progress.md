@@ -1,6 +1,7 @@
 ---
 title: Progress
 nav_order: 7
+has_children: true
 ---
 
 # Progress
@@ -20,8 +21,8 @@ What is done, what changed along the way, and what comes next.
 | Dataset: CIFAKE | Done | Used to check the feature extraction on small 32x32 images |
 | Dataset: 140k Real and Fake Faces | Done | Main dataset: 256x256 real and StyleGAN-generated faces |
 | Feature extraction (Task 1) | Done | 11 basic energy-share features from the Fast Fourier, Discrete Cosine, and Discrete Wavelet Transforms |
-| Logistic Regression (Task 2) | Done | Basic features by transform (up to 55.5%), finer frequency features (68.2%), Hann window |
-| Other classifiers (Task 3) | Done | Support Vector Machines, K-Nearest Neighbors, Naive Bayes, Decision Tree; best 74.2% |
+| [Logistic Regression (Task 2)](../docs/task2.md) | Done | Basic features by transform (up to 55.5%), finer frequency features (68.2%), Hann window |
+| [Other classifiers (Task 3)](../docs/task3.md) | Done | Support Vector Machines, K-Nearest Neighbors, Naive Bayes, Decision Tree; best 74.2% |
 | Final untouched test set | Next | See below |
 | Compression and resizing tests | Next | See below |
 | Noise-residual feature | Next | See below |

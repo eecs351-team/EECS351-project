@@ -1,11 +1,23 @@
+---
+title: "Task 3: Other classifiers"
+parent: Progress
+nav_order: 2
+---
+
 # Task 3: Other Classification Methods
 
 Ethan Kocheril, Jiayuan Zhu, Zhirui Wang, Ziyi Xie
 
 Task 2 used Logistic Regression only. Task 3 asks whether a more complex
-classifier improves detection when it sees the **same DSP features**. As planned in
-the project proposal, we compare Logistic Regression with linear and RBF Support
-Vector Machines, K-Nearest Neighbors, Gaussian Naive Bayes, and a Decision Tree.
+classifier improves detection when it sees the **same digital signal processing
+(DSP) features**. As planned in the project proposal, we compare Logistic
+Regression with linear and radial basis function (RBF) Support Vector Machines
+(SVM), K-Nearest Neighbors (KNN), Gaussian Naive Bayes, and a Decision Tree.
+
+Other abbreviations: FFT, DCT, DWT = Fast Fourier, Discrete Cosine, and Discrete
+Wavelet Transforms; PCA = principal component analysis; CV = cross-validation;
+AUC = area under the receiver operating characteristic curve (0.5 = chance,
+1 = perfect).
 
 ## Setup
 
@@ -50,12 +62,12 @@ hyperparameters):
 
 | Classifier | 11 band ratios | Radial FFT, Hann (127) | Combined (1194 -> 100 PCA) |
 | --- | --- | --- | --- |
-| Logistic Regression | 0.555 | 0.632 | 0.688 |
-| Linear SVM | 0.554 | 0.632 | 0.689 |
+| Logistic Regression | 0.556 | 0.632 | 0.688 |
+| Linear SVM | 0.555 | 0.632 | 0.689 |
 | RBF SVM | **0.565** | **0.661** | **0.742** |
-| K-Nearest Neighbors | 0.544 | 0.615 | 0.584 |
+| K-Nearest Neighbors | 0.545 | 0.615 | 0.584 |
 | Gaussian Naive Bayes | 0.540 | 0.552 | 0.593 |
-| Decision Tree | 0.526 | 0.586 | 0.611 |
+| Decision Tree | 0.527 | 0.586 | 0.611 |
 
 The best model, RBF SVM on the combined set, reaches **0.742 test accuracy and
 0.810 ROC AUC** (713 of 1,000 REAL and 771 of 1,000 FAKE correct).
@@ -65,7 +77,7 @@ The best model, RBF SVM on the combined set, reaches **0.742 test accuracy and
 ## Discussion
 
 - **The features matter more than the classifier.** With Logistic Regression
-  fixed, richer features raise accuracy from 0.555 to 0.688 (+13 points). With
+  fixed, richer features raise accuracy from 0.556 to 0.688 (+13 points). With
   the combined features fixed, the best classifier adds 5 points over Logistic
   Regression. No classifier gets far above chance on the 11 band ratios. A
   classifier cannot recover information that the features do not carry.

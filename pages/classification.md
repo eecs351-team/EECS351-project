@@ -122,6 +122,9 @@ For the 1,194 combined features, all classifiers first reduce them to 100 summar
 | AUC | Probability that a random fake image gets a higher "fake" score than a random real one |
 | Confusion matrix | Counts of each kind of correct and wrong prediction |
 
+Full details, including every feature group and the chosen settings, are on the
+[Task 2](../docs/task2.md) and [Task 3](../docs/task3.md) pages under Progress.
+
 All metrics for every model are in the result files:
 [Logistic Regression results (CSV)](../docs/results/faces_metrics.csv) and
 [classifier comparison results (CSV)](../docs/results/task3_metrics.csv).
